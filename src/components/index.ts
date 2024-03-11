@@ -2,9 +2,9 @@
 import SvgIcon from '@/components/svgicon/index.vue'
 
 interface Allcomponent {
-    [key:string]:object
+  [key: string]: object
 }
-const allGlobalComponents:Allcomponent = { SvgIcon }
+const allGlobalComponents: Allcomponent = { SvgIcon }
 // 对外暴露插件对象
 export default {
   install(app: any) {

@@ -2,7 +2,7 @@
   <div class="bg-cover">
     <div class="container">
       <div class="left">
-        <img src="@/assets/images/visual.svg" alt="可视化图标"/>
+        <img src="@/assets/images/visual.svg" alt="可视化图标" />
       </div>
       <div class="right">
         <div class="title">
@@ -35,22 +35,24 @@
     align-items: center;
     justify-content: center;
     border-radius: 8px;
-    box-shadow: 0 1px 2px -2px #00000029, 0 3px 6px #0000001f, 0 5px 12px 4px #00000017;
+    box-shadow:
+      0 1px 2px -2px #00000029,
+      0 3px 6px #0000001f,
+      0 5px 12px 4px #00000017;
     min-width: 345px;
-    
 
-    .left{
-        display: block;
-        width: 380px;
-        padding-left: 20px;
-        padding-right: 20px;
-        padding-top: 35px;
-        padding-bottom: 35px;
+    .left {
+      display: block;
+      width: 380px;
+      padding-left: 20px;
+      padding-right: 20px;
+      padding-top: 35px;
+      padding-bottom: 35px;
 
-        img{
-            width: 100%;
-            height: auto;
-        }
+      img {
+        width: 100%;
+        height: auto;
+      }
     }
   }
 }
