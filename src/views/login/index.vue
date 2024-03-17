@@ -9,24 +9,30 @@
           <img src="@/assets/icons/owl.svg" alt="可视化图标" />
           <h2>CQU VIVALAB</h2>
         </div>
-        <el-input
-          class="name"
-          placeholder="请输入用户名"
-          size="large"
-          :prefix-icon="User"
-          :maxlength="20"
-          v-model="formInput.username"
-        ></el-input>
-        <el-input
-          class="name"
-          type="password"
-          placeholder="请输入密码"
-          size="large"
-          :prefix-icon="Lock"
-          :maxlength="20"
-          v-model="formInput.password"
-          show-password
-        ></el-input>
+        <el-form style="text-align: center; padding-top: 10px">
+          <el-form-item>
+            <el-input
+              class="name"
+              placeholder="请输入用户名"
+              size="large"
+              :prefix-icon="User"
+              :maxlength="20"
+              v-model="formInput.username"
+            ></el-input>
+          </el-form-item>
+          <el-form-item style="margin-bottom: 0">
+            <el-input
+              class="name"
+              type="password"
+              placeholder="请输入密码"
+              size="large"
+              :prefix-icon="Lock"
+              :maxlength="20"
+              v-model="formInput.password"
+              show-password
+            ></el-input>
+          </el-form-item>
+        </el-form>
         <el-checkbox v-model="remember" size="large">记住我</el-checkbox>
         <div>
           <el-button size="large" class="btn1" color="#228B22" plain>
@@ -56,6 +62,7 @@ import Vcode from 'vue3-puzzle-vcode'
 import useUserStore from '@/store/modules/user'
 import { useRouter } from 'vue-router'
 import { ElNotification, ElMessage } from 'element-plus'
+import { getTime } from '@/utils/time'
 // 用户输入表单
 const formInput = reactive({ username: '', password: '' })
 // 拿到本地化存储对象
@@ -118,7 +125,8 @@ const onSuccess = () => {
   //登录成功的提示信息
   ElNotification({
     type: 'success',
-    message: '登录成功！',
+    message: '欢迎回来',
+    title: `Hi,${getTime()}好`,
   })
   loading.value = false
 }
@@ -188,7 +196,6 @@ const onSuccess = () => {
       .name {
         width: 300px;
         align-items: center;
-        margin-top: 20px;
       }
 
       .btn1 {

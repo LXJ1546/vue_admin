@@ -1,2 +1,7 @@
-// 给项目提供scss的全局变量
-$color:red;
+//定义scss全局变量
+// 引入 Elements Plus 的样式文件
+
+//左侧菜单宽度
+$base-menu-width :220px;
+//头部导航高度
+$base-header-height:60px;

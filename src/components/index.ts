@@ -1,6 +1,7 @@
 //引入项目中全部的全局组件
 import SvgIcon from '@/components/svgicon/index.vue'
-
+//引入element-plus提供全部图标组件
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 interface Allcomponent {
   [key: string]: object
 }
@@ -11,5 +12,9 @@ export default {
     Object.keys(allGlobalComponents).forEach((key) => {
       app.component(key, allGlobalComponents[key])
     })
+    //将element-plus提供全部图标注册为全局组件
+    for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+      app.component(key, component)
+    }
   },
 }
