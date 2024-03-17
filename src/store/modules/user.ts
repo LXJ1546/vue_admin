@@ -11,7 +11,7 @@ import { BasicRoutes } from '@/router/basic-routes'
 const useUserStore = defineStore('user', {
   state: (): UserState => ({
     token: GET_TOKEN(), //用户唯一标识
-    menuRoutes:BasicRoutes //仓库存储生成菜单需要数组（路由）
+    menuRoutes: BasicRoutes, //仓库存储生成菜单需要数组（路由）
   }),
   getters: {},
   actions: {

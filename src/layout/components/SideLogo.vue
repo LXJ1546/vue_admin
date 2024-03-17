@@ -1,12 +1,12 @@
 <template>
   <router-link to="/" class="logo_container">
     <img :src="settings.logo" class="image" />
-    <h2 class="title">{{settings.title}}</h2>
+    <h2 class="title">{{ settings.title }}</h2>
   </router-link>
 </template>
 
 <script setup lang="ts">
-import { settings } from '@/setting';
+import { settings } from '@/setting'
 </script>
 
 <style lang="scss" scoped>
