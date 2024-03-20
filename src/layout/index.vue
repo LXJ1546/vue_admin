@@ -1,16 +1,21 @@
 <template>
   <div class="layout_container">
-    <div class="appSide">
+    <div class="appSide" :class="{ fold: settingStore.fold ? true : false }">
       <SideLogo />
       <SideMenu />
     </div>
-    <div class="appHeader">你好</div>
-    <div class="appMain">
+    <div class="appHeader" :class="{ fold: settingStore.fold ? true : false }">
+      <Tab></Tab>
+    </div>
+    <div class="appMain" :class="{ fold: settingStore.fold ? true : false }">
       <div class="content">
         <Main></Main>
       </div>
     </div>
-    <div class="appFooter"></div>
+    <div
+      class="appFooter"
+      :class="{ fold: settingStore.fold ? true : false }"
+    ></div>
   </div>
 </template>
 
@@ -18,6 +23,10 @@
 import SideLogo from './components/SideLogo.vue'
 import SideMenu from './components/SideMenu.vue'
 import Main from './main/index.vue'
+import Tab from './components/Tab.vue'
+import useSettingStore from '@/store/modules/setting'
+// 拿到fold状态，用于判断是否折叠菜单
+const settingStore = useSettingStore()
 </script>
 
 <style lang="scss" scoped>
@@ -36,6 +45,12 @@ import Main from './main/index.vue'
     border-right-style: solid;
     border-right-width: 1px;
     border-right-color: rgb(239, 239, 245, 1);
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 0.4s;
+    &.fold {
+      width: $base-menu-min-width;
+    }
   }
   .appHeader {
     position: fixed;
@@ -53,6 +68,13 @@ import Main from './main/index.vue'
     border-bottom-style: solid;
     border-bottom-width: 1px;
     border-bottom-color: rgb(239, 239, 245, 1);
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 0.4s;
+    &.fold {
+      width: calc(100% - $base-menu-min-width);
+      left: $base-menu-min-width;
+    }
   }
   .appMain {
     position: absolute;
@@ -63,6 +85,13 @@ import Main from './main/index.vue'
     top: $base-header-height;
     padding: 12px;
     overflow: auto;
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 0.4s;
+    &.fold {
+      width: calc(100% - $base-menu-min-width);
+      left: $base-menu-min-width;
+    }
     .content {
       padding: 24px;
       border-radius: 8px;
@@ -85,6 +114,13 @@ import Main from './main/index.vue'
     border-top-style: solid;
     border-top-width: 1px;
     border-top-color: rgb(239, 239, 245, 1);
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 0.4s;
+    &.fold {
+      width: calc(100% - $base-menu-min-width);
+      left: $base-menu-min-width;
+    }
   }
 }
 </style>

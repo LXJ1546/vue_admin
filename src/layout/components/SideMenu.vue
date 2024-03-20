@@ -6,6 +6,7 @@
       style="border-right: 0"
       active-text-color="#529b2e"
       :default-active="route.path"
+      :collapse="settingStore.fold"
     >
       <!-- 根据路由动态展示菜单 -->
       <Menu :menuList="userStore.menuRoutes"></Menu>
@@ -17,7 +18,10 @@
 import Menu from './Menu.vue'
 import useUserStore from '@/store/modules/user'
 import { useRoute } from 'vue-router'
+import useSettingStore from '@/store/modules/setting'
 const userStore = useUserStore()
+// 拿到fold状态，用于判断是否折叠菜单
+const settingStore = useSettingStore()
 const route = useRoute()
 </script>
 

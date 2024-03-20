@@ -14,7 +14,7 @@ export const BasicRoutes = [
     path: '/',
     component: () => import('@/layout/index.vue'),
     meta: {
-      title: '首页布局',
+      title: '',
       icon: '',
       hidden: true,
     },
@@ -41,6 +41,7 @@ export const BasicRoutes = [
       icon: 'SetUp',
       hidden: false,
     },
+    redirect: '/res/homepage',
     children: [
       {
         name: 'Homepage',
@@ -97,7 +98,7 @@ export const BasicRoutes = [
         path: '/res/picture',
         component: () => import('@/views/resource/picture/index.vue'),
         meta: {
-          title: '奖项管理',
+          title: '画廊管理',
           icon: 'Picture',
           hidden: false,
         },
@@ -113,6 +114,7 @@ export const BasicRoutes = [
       icon: 'Lock',
       hidden: false,
     },
+    redirect: '/pms/menu',
     children: [
       {
         name: 'Menu',

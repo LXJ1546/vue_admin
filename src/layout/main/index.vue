@@ -1,38 +1,40 @@
 <template>
   <!-- 路由组件出口的位置 -->
   <router-view v-slot="{ Component }">
-    <transition name="slide">
+    <transition name="fade" mode="out-in">
       <!-- 渲染layout一级路由的子路由 -->
-      <component :is="Component" />
+      <component :is="Component" v-if="flag" />
     </transition>
   </router-view>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import useSettingStore from '@/store/modules/setting'
+import { watch, ref, nextTick } from 'vue'
+const settingStore = useSettingStore()
+const flag = ref(true)
+// 监听数据是否发生变化
+watch(
+  () => settingStore.refresh,
+  () => {
+    //点击刷新按钮：路由组件销毁
+    flag.value = false
+    //DOM更新完成之后再将组件展示出来
+    nextTick(() => {
+      flag.value = true
+    })
+  },
+)
+</script>
 
 <style lang="scss" scoped>
-.slide-enter-active,
-.slide-leave-active {
-  transition: all 0.75s ease-out;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
 }
 
-.slide-enter-to {
-  position: absolute;
-  right: 0;
-}
-
-.slide-enter-from {
-  position: absolute;
-  right: -100%;
-}
-
-.slide-leave-to {
-  position: absolute;
-  left: -100%;
-}
-
-.slide-leave-from {
-  position: absolute;
-  left: 0;
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
