@@ -60,7 +60,7 @@ import { User, Lock } from '@element-plus/icons-vue'
 import { ref, reactive } from 'vue'
 import Vcode from 'vue3-puzzle-vcode'
 import useUserStore from '@/store/modules/user'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { ElNotification, ElMessage } from 'element-plus'
 import { getTime } from '@/utils/time'
 // 用户输入表单
@@ -82,6 +82,7 @@ const loading = ref(false)
 const remember = ref(false)
 // 路由对象,用于跳转
 const router = useRouter()
+const route = useRoute()
 
 //登录按钮处理逻辑
 const handleLogin = async () => {
@@ -121,7 +122,9 @@ const onClose = () => {
 const onSuccess = () => {
   onClose() // 验证成功，需要手动关闭模态框
   //跳转到首页
-  router.push('/')
+  // 判断登录时是否有query参数，如果有就往query参数跳转，没有则跳首页
+  const redirect: any = route.query.redirect
+  router.push({ path: redirect || '/' })
   //登录成功的提示信息
   ElNotification({
     type: 'success',

@@ -1,6 +1,7 @@
 //对axios进行封装，使用请求和响应拦截器
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
+import useUserStore from '@/store/modules/user'
 //利用create方法创建axios实例（进行其他配置：基础路径、超时时间等）
 let request = axios.create({
   baseURL: import.meta.env.VITE_APP_BASE_API, //基础路径上会携带/api
@@ -10,6 +11,10 @@ let request = axios.create({
 request.interceptors.request.use((config) => {
   // 返回配置对象
   // config配置对象，headers请求头，经常给服务器端携带公共的请求参数
+  const useStore = useUserStore()
+  if (useStore.token) {
+    config.headers.token = useStore.token
+  }
   return config
 })
 request.interceptors.response.use(

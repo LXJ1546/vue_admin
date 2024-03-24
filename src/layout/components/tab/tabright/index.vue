@@ -14,28 +14,30 @@
     @click="handleFullScreen"
   />
   <el-button type="primary" icon="Setting" size="large" circle />
-  <img
-    src="https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif?imageView2/1/w/80/h/80"
-    alt=""
-  />
+  <img :src="useStore.avatar" alt="" />
   <el-dropdown>
     <div class="text">
-      <span class="text1">Admin</span>
+      <span class="text1">{{ useStore.username }}</span>
       <span class="text2">[超级管理员]</span>
     </div>
     <template #dropdown>
       <el-dropdown-menu>
         <el-dropdown-item>个人资料</el-dropdown-item>
         <el-dropdown-item>切换角色</el-dropdown-item>
-        <el-dropdown-item>退出登录</el-dropdown-item>
+        <el-dropdown-item @click="handleLogout">退出登录</el-dropdown-item>
       </el-dropdown-menu>
     </template>
   </el-dropdown>
 </template>
 
 <script setup lang="ts">
+import useUserStore from '@/store/modules/user'
 import useSettingStore from '@/store/modules/setting'
+import { useRouter, useRoute } from 'vue-router'
+const useStore = useUserStore()
 const settingStore = useSettingStore()
+const router = useRouter()
+const route = useRoute()
 const handleRefreshClick = () => {
   settingStore.refresh = !settingStore.refresh
 }
@@ -50,6 +52,11 @@ const handleFullScreen = () => {
     //退出全屏
     document.exitFullscreen()
   }
+}
+
+const handleLogout = () => {
+  useStore.userLogout()
+  router.replace({ path: '/login', query: { redirect: route.path } })
 }
 </script>
 

@@ -15,7 +15,7 @@
       >
         <div class="crumb">
           <el-icon style="padding-right: 2px">
-            <component :is="item.meta.icon"></component>
+            <component :is="item.meta.icon" v-if="item.meta.icon"></component>
           </el-icon>
           <span>{{ item.meta.title }}</span>
         </div>
