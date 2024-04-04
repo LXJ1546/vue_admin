@@ -46,7 +46,7 @@ export const BasicRoutes = [
       {
         name: 'Homepage',
         path: '/res/homepage',
-        component: () => import('@/views/resource/home/index.vue'),
+        component: () => import('@/views/resource/homepage/index.vue'),
         meta: {
           title: '首页管理',
           icon: 'Histogram',

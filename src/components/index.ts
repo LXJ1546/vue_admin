@@ -18,3 +18,7 @@ export default {
     }
   },
 }
+export { default as HeaderBar } from './headerbar/index.vue'
+export { default as MeModal } from './modal/index.vue'
+export { default as MeSearch } from './search/index.vue'
+export { default as MeQueryItem } from './search/QueryItem.vue'

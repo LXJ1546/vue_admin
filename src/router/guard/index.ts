@@ -19,27 +19,27 @@ nprogress.configure({
 router.beforeEach(async (to, from, next) => {
   nprogress.start()
   const token = userStore.token
-  const username = userStore.username
   if (token) {
     //登录成功，不能访问login，指向首页
     if (to.path === '/login') {
       next({ path: '/' })
     } else {
-      if (username) {
-        next()
-      } else {
-        //如果没有用户信息就先发请求拿到信息再放行
-        try {
-          //获取用户信息
-          await userStore.userInfo()
-          next()
-        } catch (error) {
-          //可能的原因：token过期|用户手动处理token
-          //退出登陆->用户相关的数据清空
-          userStore.userLogout()
-          next({ path: '/login', query: { redirect: to.path } })
-        }
-      }
+      next()
+      // if (username) {
+      //   next()
+      // } else {
+      //   //如果没有用户信息就先发请求拿到信息再放行
+      //   try {
+      //     //获取用户信息
+      //     await userStore.userInfo()
+      //     next()
+      //   } catch (error) {
+      //     //可能的原因：token过期|用户手动处理token
+      //     //退出登陆->用户相关的数据清空
+      //     userStore.userLogout()
+      //     next({ path: '/login', query: { redirect: to.path } })
+      //   }
+      // }
     }
   } else {
     //用户未登录
@@ -49,7 +49,6 @@ router.beforeEach(async (to, from, next) => {
       next({ path: '/login', query: { redirect: to.path } })
     }
   }
-  next()
 })
 //全局后置守卫
 router.beforeEach((to, from) => {

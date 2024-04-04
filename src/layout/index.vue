@@ -8,14 +8,12 @@
       <Tab></Tab>
     </div>
     <div class="appMain" :class="{ fold: settingStore.fold ? true : false }">
-      <div class="content">
-        <Main></Main>
-      </div>
+      <Main></Main>
     </div>
-    <div
-      class="appFooter"
-      :class="{ fold: settingStore.fold ? true : false }"
-    ></div>
+    <div class="appFooter" :class="{ fold: settingStore.fold ? true : false }">
+      <p class="text">CopyRight© viva525 2023</p>
+      <p class="text" style="margin-top: 5px;">蜀ICP备2023035038号</p>
+    </div>
   </div>
 </template>
 
@@ -25,8 +23,16 @@ import SideMenu from './components/SideMenu.vue'
 import Main from './main/index.vue'
 import Tab from './components/Tab.vue'
 import useSettingStore from '@/store/modules/setting'
+import { onMounted } from 'vue';
+import useUserStore from '@/store/modules/user'
 // 拿到fold状态，用于判断是否折叠菜单
 const settingStore = useSettingStore()
+
+const userStore=useUserStore()
+// 在onMounted中执行请求获取方法（定义在仓库中）
+onMounted(()=>{
+  userStore.userInfo()
+})
 </script>
 
 <style lang="scss" scoped>
@@ -83,7 +89,6 @@ const settingStore = useSettingStore()
     background-color: rgba(245, 246, 251, 1);
     left: $base-menu-width;
     top: $base-header-height;
-    padding: 12px;
     overflow: auto;
     transition-property: all;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -92,19 +97,14 @@ const settingStore = useSettingStore()
       width: calc(100% - $base-menu-min-width);
       left: $base-menu-min-width;
     }
-    .content {
-      padding: 24px;
-      border-radius: 8px;
-      background-color: white;
-      border-style: solid;
-      border-width: 1px;
-      border-color: rgb(239, 239, 245, 1);
-    }
+    
   }
   .appFooter {
     position: fixed;
     display: flex;
     align-items: center;
+    justify-content: center;
+    flex-direction: column;
     flex-shrink: 0;
     height: $base-header-height;
     width: calc(100% - $base-menu-width);
@@ -120,6 +120,10 @@ const settingStore = useSettingStore()
     &.fold {
       width: calc(100% - $base-menu-min-width);
       left: $base-menu-min-width;
+    }
+    .text {
+      color: rgb(107 114 128);
+      font-size: 14px;
     }
   }
 }

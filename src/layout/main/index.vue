@@ -3,7 +3,9 @@
   <router-view v-slot="{ Component }">
     <transition name="fade" mode="out-in">
       <!-- 渲染layout一级路由的子路由 -->
-      <component :is="Component" v-if="flag" />
+      <div style="height: 100%" :key="route.path">
+        <component :is="Component" v-if="flag" />
+      </div>
     </transition>
   </router-view>
 </template>
@@ -11,7 +13,9 @@
 <script setup lang="ts">
 import useSettingStore from '@/store/modules/setting'
 import { watch, ref, nextTick } from 'vue'
+import { useRoute } from 'vue-router'
 const settingStore = useSettingStore()
+const route = useRoute()
 const flag = ref(true)
 // 监听数据是否发生变化
 watch(

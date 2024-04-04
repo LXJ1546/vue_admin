@@ -1,19 +1,7 @@
 <template>
-  <el-button
-    type="primary"
-    icon="Refresh"
-    size="large"
-    circle
-    @click="handleRefreshClick"
-  />
-  <el-button
-    type="primary"
-    icon="FullScreen"
-    size="large"
-    circle
-    @click="handleFullScreen"
-  />
-  <el-button type="primary" icon="Setting" size="large" circle />
+  <el-button icon="Refresh" size="large" circle @click="handleRefreshClick" />
+  <el-button icon="FullScreen" size="large" circle @click="handleFullScreen" />
+  <el-button icon="Setting" size="large" circle />
   <img :src="useStore.avatar" alt="" />
   <el-dropdown>
     <div class="text">
