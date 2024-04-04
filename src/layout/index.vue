@@ -12,7 +12,7 @@
     </div>
     <div class="appFooter" :class="{ fold: settingStore.fold ? true : false }">
       <p class="text">CopyRight© viva525 2023</p>
-      <p class="text" style="margin-top: 5px;">蜀ICP备2023035038号</p>
+      <p class="text" style="margin-top: 5px">蜀ICP备2023035038号</p>
     </div>
   </div>
 </template>
@@ -23,14 +23,14 @@ import SideMenu from './components/SideMenu.vue'
 import Main from './main/index.vue'
 import Tab from './components/Tab.vue'
 import useSettingStore from '@/store/modules/setting'
-import { onMounted } from 'vue';
+import { onMounted } from 'vue'
 import useUserStore from '@/store/modules/user'
 // 拿到fold状态，用于判断是否折叠菜单
 const settingStore = useSettingStore()
 
-const userStore=useUserStore()
+const userStore = useUserStore()
 // 在onMounted中执行请求获取方法（定义在仓库中）
-onMounted(()=>{
+onMounted(() => {
   userStore.userInfo()
 })
 </script>
@@ -97,7 +97,6 @@ onMounted(()=>{
       width: calc(100% - $base-menu-min-width);
       left: $base-menu-min-width;
     }
-    
   }
   .appFooter {
     position: fixed;

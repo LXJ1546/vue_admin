@@ -78,7 +78,7 @@ import { HeaderBar, MeSearch, MeQueryItem } from '@/components'
 import api from '@/api/news/index'
 import { NImage } from 'naive-ui'
 import { useRoute } from 'vue-router'
-import { ref, onMounted,computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 const route = useRoute()
 const queryItems = ref({ title: '', year: '' })
 // 后端拿到的数据，调整格式之后的数据

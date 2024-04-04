@@ -5,9 +5,7 @@
         <slot />
       </div>
       <div style="flex-shrink: 0">
-        <el-button type="primary" plain icon="RefreshLeft">
-          重置
-        </el-button>
+        <el-button type="primary" plain icon="RefreshLeft">重置</el-button>
         <el-button type="primary" icon="Search">搜索</el-button>
       </div>
     </el-form>
