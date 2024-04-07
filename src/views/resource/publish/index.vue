@@ -31,7 +31,7 @@
           </template>
         </el-table-column>
         <el-table-column label="作者" prop="author" :width="400" />
-        <el-table-column label="标题" prop="title" :width="600" />
+        <el-table-column label="标题" prop="title" :width="460" />
         <el-table-column label="照片">
           <template #default="scope">
             <n-image width="100" height="50" :src="scope.row.picture" />
@@ -39,7 +39,7 @@
         </el-table-column>
         <el-table-column label="期刊" prop="institution" />
         <el-table-column label="日期" prop="date" />
-        <el-table-column label="关键词" prop="keywords" />
+        <el-table-column label="关键词" prop="keywords" :width="400" />
         <el-table-column label="操作" align="right" :width="300">
           <template #default="scope">
             <el-button

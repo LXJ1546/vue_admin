@@ -32,7 +32,7 @@
       </el-upload>
     </div>
   </div>
-  <MeModal ref="modalRef" title="更新图片" width="500">
+  <el-dialog v-model="dialogFormVisible" title="更新图片" :width="500">
     <el-upload
       v-model:file-list="fileList"
       action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
@@ -49,37 +49,36 @@
         </div>
       </template>
     </el-upload>
-  </MeModal>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="handleCancel">取消</el-button>
+        <el-button type="primary" @click="handleOk">确定</el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { HeaderBar, MeModal } from '@/components'
+import { HeaderBar } from '@/components'
 import api from '@/api/homepage/index'
 import { useRoute } from 'vue-router'
 // 按需引入naiveUI组件
 import { NCard, NImageGroup, NSpace, NImage } from 'naive-ui'
 const route = useRoute()
 // 是否显示模态框
-// 添加模态框引用（加个any，不然下面报错）
-const modalRef: any = ref(null)
+const dialogFormVisible = ref(false)
 const imgList = ref<any>([])
-const fileList = ref([
-  {
-    name: 'element-plus-logo.svg',
-    url: 'https://element-plus.org/images/element-plus-logo.svg',
-  },
-  {
-    name: 'element-plus-logo2.svg',
-    url: 'https://element-plus.org/images/element-plus-logo.svg',
-  },
-])
+const fileList = ref([])
 const show = () => {
-  if (modalRef.value) {
-    modalRef.value.dialogFormVisible = true
-  }
+  dialogFormVisible.value = true
 }
-
+const handleCancel = () => {
+  dialogFormVisible.value = false
+}
+const handleOk = () => {
+  dialogFormVisible.value = false
+}
 const getImgList = async () => {
   const result = await api.read()
   console.log(result)

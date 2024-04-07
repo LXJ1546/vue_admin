@@ -3,8 +3,8 @@
     <slot></slot>
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="close">取消</el-button>
-        <el-button type="primary" @click="close">确定</el-button>
+        <el-button>取消</el-button>
+        <el-button type="primary">确定</el-button>
       </div>
     </template>
   </el-dialog>
@@ -22,10 +22,15 @@ defineProps({
     type: String,
     default: '500',
   },
+  onOk: {
+    type: Function,
+    default: () => {},
+  },
+  onCancel: {
+    type: Function,
+    default: () => {},
+  },
 })
-const close = () => {
-  dialogFormVisible.value = false
-}
 defineExpose({ dialogFormVisible })
 </script>
 
