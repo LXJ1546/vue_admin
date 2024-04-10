@@ -25,8 +25,6 @@ export const useCrud = ({
   const currentPage = ref<number>(1)
   //每一页展示的数据
   const pageSize = ref<number>(6)
-  //   // 图片列表,用于拼接
-  //   const list = ref([])
   // 处理图片上传
   const handleUploadChange: UploadProps['onChange'] = (_image, images) => {
     // 更新上传图片列表

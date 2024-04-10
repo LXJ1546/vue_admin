@@ -9,5 +9,5 @@ export default {
   // 更新数据
   update: (data: any) => request.put<any, awardAddData>('/Award/Manage', data),
   //删除数据
-  delete: (id: any) => request.delete(`/Award/Manage?id=${id}`),
+  delete: (id: number) => request.delete(`/Award/Manage?id=${id}`),
 }

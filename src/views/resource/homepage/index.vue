@@ -11,43 +11,45 @@
                 <n-image width="300" height="113" :src="item.picture" />
               </div>
               <n-space justify="space-evenly" style="margin-top: 16px">
-                <el-button @click="show">修改</el-button>
-                <el-button>删除</el-button>
+                <el-button @click="handleEdit">修改</el-button>
+                <el-button @click="handleDelete(item.id)">删除</el-button>
               </n-space>
             </n-card>
           </n-space>
         </n-image-group>
       </n-card>
-      <el-upload class="upload-demo" drag multiple>
+      <el-upload
+        class="upload-demo"
+        drag
+        multiple
+        :limit="1"
+        v-model:file-list="fileList1"
+        :on-change="addImage"
+        :auto-upload="false"
+      >
         <el-icon class="el-icon--upload"><upload-filled /></el-icon>
         <div class="el-upload__text">
-          Drop file here or
-          <em>click to upload</em>
+          拖拽文件到此处或者
+          <em>点击上传</em>
         </div>
-        <template #tip>
-          <div class="el-upload__tip">
-            jpg/png files with a size less than 500kb
-          </div>
-        </template>
       </el-upload>
     </div>
   </div>
   <el-dialog v-model="dialogFormVisible" title="更新图片" :width="500">
     <el-upload
       v-model:file-list="fileList"
-      action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+      action=""
       multiple
-      :limit="3"
+      :limit="1"
+      :on-change="handleUploadChange"
+      :on-remove="handleRemove"
+      :auto-upload="false"
+      list-type="picture"
     >
       <el-button type="primary" plain>
         点击上传
         <el-icon class="el-icon--right"><Upload /></el-icon>
       </el-button>
-      <template #tip>
-        <div class="el-upload__tip">
-          jpg/png files with a size less than 500KB.
-        </div>
-      </template>
     </el-upload>
     <template #footer>
       <div class="dialog-footer">
@@ -65,24 +67,160 @@ import api from '@/api/homepage/index'
 import { useRoute } from 'vue-router'
 // 按需引入naiveUI组件
 import { NCard, NImageGroup, NSpace, NImage } from 'naive-ui'
+import type { UploadUserFile, UploadProps } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { getPictureUrl } from '@/utils/parsePic'
+
 const route = useRoute()
 // 是否显示模态框
 const dialogFormVisible = ref(false)
+// 后端拿到的数据
 const imgList = ref<any>([])
-const fileList = ref([])
-const show = () => {
-  dialogFormVisible.value = true
+// 小的文件上传列表
+const fileList = ref<UploadUserFile[]>([])
+// 大的文件上传列表
+const fileList1 = ref<UploadUserFile[]>([])
+// 需要进行操作的图片的id
+const imgId = ref(0)
+
+// 处理图片上传
+const handleUploadChange: UploadProps['onChange'] = (_image, images) => {
+  // 更新上传图片列表
+  fileList.value = images
 }
+
+// 删除上传图片
+const handleRemove: UploadProps['onRemove'] = (_image, images) => {
+  fileList.value = images // 更新上传列表数据
+}
+
+// 添加新图片
+const addImage: UploadProps['onChange'] = async (_image, images) => {
+  // 更新上传图片列表
+  fileList1.value = images
+  const formData = new FormData()
+  // 添加文件到formData
+  fileList1.value.forEach((file: any) => {
+    formData.append('images', file.raw)
+  })
+  try {
+    await api.create(formData)
+    // 重新获取列表
+    getImgList()
+    // 提示成功信息
+    ElMessage({
+      message: '上传成功！',
+      type: 'success',
+    })
+    // 清空上传列表
+    fileList1.value = []
+  } catch (error) {
+    // 提示错误信息
+    ElMessage({
+      message: '上传失败！',
+      type: 'error',
+    })
+    console.log(error)
+  }
+}
+
+// 点击修改按钮
+const handleEdit = (item: any) => {
+  dialogFormVisible.value = true
+  // 拿到该图片id
+  imgId.value = item.id
+  let list = []
+  // 创建URL对象
+  if (item.picture) {
+    // 拿到图片链接和名字
+    list = getPictureUrl(item.picture)
+    // 更新上传列表
+    fileList.value = list
+  }
+}
+
+//删除图片逻辑
+const handleDelete = (id: number) => {
+  ElMessageBox.confirm('请确认是否删除该条数据', 'Warning', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  })
+    .then(async () => {
+      try {
+        // 调用删除接口，传入数据的id
+        await api.delete(id)
+        // 重新获取列表
+        getImgList()
+        // 提示成功信息
+        ElMessage({
+          message: '删除成功！',
+          type: 'success',
+        })
+      } catch (error) {
+        // 提示错误信息
+        ElMessage({
+          message: '删除失败！',
+          type: 'error',
+        })
+        console.log(error)
+      }
+    })
+    .catch(() => {})
+}
+
+const updateImage = async () => {
+  const formData = new FormData()
+  let item = { id: imgId.value, picture: '' }
+  // 将模态框表单数据对象转换为JSON字符串并添加到formData
+  formData.append('carousel', JSON.stringify(item))
+  // 添加文件到formData
+  fileList.value.forEach((file: any) => {
+    formData.append('images', file.raw)
+  })
+  try {
+    await api.update(formData)
+    // 重新获取列表
+    getImgList()
+    // 提示成功信息
+    ElMessage({
+      message: '修改成功！',
+      type: 'success',
+    })
+  } catch (error) {
+    // 提示错误信息
+    ElMessage({
+      message: '修改失败！',
+      type: 'error',
+    })
+    console.log(error)
+  }
+}
+
 const handleCancel = () => {
   dialogFormVisible.value = false
+  fileList.value = []
 }
+
 const handleOk = () => {
+  if (!fileList.value) return
+  updateImage()
+  fileList.value = []
   dialogFormVisible.value = false
 }
+
 const getImgList = async () => {
   const result = await api.read()
-  console.log(result)
-  imgList.value = result.data
+  if (result.code == 'SUCCESS') {
+    imgList.value = result.data
+    console.log(imgList)
+  } else {
+    // 提示错误信息
+    ElMessage({
+      message: '信息获取失败！',
+      type: 'error',
+    })
+  }
 }
 onMounted(() => {
   getImgList()
