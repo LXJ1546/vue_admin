@@ -2,7 +2,8 @@ import request from '@/utils/request'
 import { galleryResponseData, galleryAddData } from './type'
 export default {
   // 展示数据，参数用于查询
-  read: (params = {}) => request.get<any, galleryResponseData>('/Gallery/Manage', { params }),
+  read: (params = {}) =>
+    request.get<any, galleryResponseData>('/Gallery/Manage', { params }),
   // 新增数据
   create: (data: any) =>
     request.post<any, galleryAddData>('/Gallery/Manage', data),

@@ -116,7 +116,7 @@ export const useCrud = ({
     try {
       if (isAdd.value) {
         // 发送新增请求
-        const response=await doCreate(formData)
+        const response = await doCreate(formData)
         console.log(response)
       } else {
         // 修改请求

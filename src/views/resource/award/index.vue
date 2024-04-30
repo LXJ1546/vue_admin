@@ -50,7 +50,10 @@
               :src="item.url"
               style="margin-left: 2px"
             />
-            <div v-if="!scope.row.picture" style="width: 100px; height: 60px"></div>
+            <div
+              v-if="!scope.row.picture"
+              style="width: 100px; height: 60px"
+            ></div>
           </template>
         </el-table-column>
         <el-table-column label="日期" prop="date" sortable />
