@@ -1,7 +1,9 @@
 <template>
   <div class="picture_manage">
     <HeaderBar :title="route.meta.title">
-      <el-button type="primary" icon="Plus">添加画廊</el-button>
+      <el-button type="primary" icon="Plus" @click="handleAdd">
+        添加画廊
+      </el-button>
     </HeaderBar>
     <div class="content">
       <MeSearch>
@@ -23,15 +25,26 @@
           </el-select>
         </MeQueryItem>
       </MeSearch>
-      <el-table :data="pagedTableData" style="width: 100%" size="large">
+      <el-table
+        v-loading="loading"
+        :data="pagedTableData"
+        style="width: 100%"
+        size="large"
+      >
         <el-table-column label="标题" prop="title" :width="400" />
-        <el-table-column label="照片">
+        <el-table-column label="图片">
           <template #default="scope">
-            <n-image width="100" height="50" :src="scope.row.picture" />
+            <n-image
+              v-if="scope.row.picture"
+              width="100"
+              height="50"
+              :src="scope.row.picture"
+            />
+            <div v-else style="width: 100px; height: 50px"></div>
           </template>
         </el-table-column>
         <el-table-column label="类型" prop="type" />
-        <el-table-column label="来源" prop="source" :width="600" />
+        <el-table-column label="来源" prop="source" />
         <el-table-column label="操作" align="right" :width="300">
           <template #default="scope">
             <el-button
@@ -63,14 +76,61 @@
       />
     </div>
   </div>
+  <el-dialog
+    v-model="dialogFormVisible"
+    :title="isAdd ? '新增画廊图片' : '修改画廊图片'"
+    :width="600"
+    @close="handleCancel(formRef)"
+  >
+    <el-form :model="modalForm" :rules="rules" ref="formRef">
+      <el-form-item label="标题" prop="title">
+        <el-input v-model="modalForm.title" />
+      </el-form-item>
+      <el-form-item label="类型" prop="type">
+        <el-input v-model="modalForm.type" />
+      </el-form-item>
+      <el-form-item label="来源" prop="source">
+        <el-input v-model="modalForm.source" />
+      </el-form-item>
+      <el-form-item label="图片" prop="picture">
+        <el-upload
+          class="upload-demo"
+          action=""
+          :limit="1"
+          v-model:file-list="fileList"
+          :on-change="handleUploadChange"
+          :on-remove="handleRemove"
+          :auto-upload="false"
+          list-type="picture"
+        >
+          <el-button type="primary" icon="Upload">点击上传</el-button>
+        </el-upload>
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="handleCancel(formRef)">取消</el-button>
+        <el-button
+          type="primary"
+          @click="handleOk(formRef, 'gallery')"
+          :loading="btnLoading"
+        >
+          确定
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
 import { HeaderBar, MeSearch, MeQueryItem } from '@/components'
+import type { UploadUserFile, FormInstance } from 'element-plus'
 import api from '@/api/picture/index'
 import { NImage } from 'naive-ui'
+import { Gallery } from '@/api/picture/type'
+import { useCrud } from '@/hooks/useCrud'
 import { useRoute } from 'vue-router'
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, reactive } from 'vue'
 const route = useRoute()
 const queryItems = ref({ title: '', type: '' })
 const options = [
@@ -79,43 +139,56 @@ const options = [
   { label: '其他', value: 2 },
 ]
 
-const galleryData = ref<any>([])
-// interface User {
-//   title: string
-//   picture: string
-//   type: string
-//   source: string
-// }
-
-const handleEdit = (index: number, row: any) => {
-  console.log(index, row)
-}
-const handleDelete = (index: number, row: any) => {
-  console.log(index, row)
-}
-
-//当前页码
-const currentPage = ref<number>(1)
-//每一页展示的数据
-const pageSize = ref<number>(6)
-
-//根据当前页码和页大小来分页数据
-const pagedTableData = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value
-  const end = currentPage.value * pageSize.value
-  return galleryData.value.slice(start, end)
+const galleryData = ref<Gallery[]>([])
+// 图片文件上传列表
+const fileList = ref<UploadUserFile[]>([])
+// 表单的引用
+const formRef = ref<FormInstance>()
+// 模态框表单数据
+const modalForm = ref<Gallery>({
+  id: 0,
+  type: '',
+  title: '',
+  picture: '',
+  source: '',
 })
-// 处理页码变化
-function handleCurrentChange(val: number) {
-  currentPage.value = val
-}
 
-const getAwardList = async () => {
-  const result = await api.read()
-  galleryData.value = result.data
-}
+// 表单校验规则
+const rules = reactive({
+  title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
+  type: [{ required: true, message: '请输入类型', trigger: 'blur' }],
+})
+
+// 组件挂载时拿到数据
 onMounted(() => {
-  getAwardList()
+  getDataList()
+})
+
+const {
+  dialogFormVisible,
+  loading,
+  btnLoading,
+  isAdd,
+  currentPage,
+  pageSize,
+  pagedTableData,
+  handleUploadChange,
+  handleRemove,
+  handleCurrentChange,
+  getDataList,
+  handleAdd,
+  handleEdit,
+  handleDelete,
+  handleCancel,
+  handleOk,
+} = useCrud({
+  modalForm: modalForm,
+  fileList: fileList,
+  tableData: galleryData,
+  doRead: api.read,
+  doCreate: api.create,
+  doUpdate: api.update,
+  doDelete: api.delete,
 })
 </script>
 

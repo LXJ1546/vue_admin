@@ -98,6 +98,7 @@ const handleRemove: UploadProps['onRemove'] = (_image, images) => {
 const addImage: UploadProps['onChange'] = async (_image, images) => {
   // 更新上传图片列表
   fileList1.value = images
+  if (!fileList1.value) return
   const formData = new FormData()
   // 添加文件到formData
   fileList1.value.forEach((file: any) => {
@@ -170,6 +171,8 @@ const handleDelete = (id: number) => {
 }
 
 const updateImage = async () => {
+  // 只能通过length判断，不能判断是否为空
+  if (fileList.value.length == 0) return
   const formData = new FormData()
   let item = { id: imgId.value, picture: '' }
   // 将模态框表单数据对象转换为JSON字符串并添加到formData
@@ -203,7 +206,6 @@ const handleCancel = () => {
 }
 
 const handleOk = () => {
-  if (!fileList.value) return
   updateImage()
   fileList.value = []
   dialogFormVisible.value = false
@@ -213,7 +215,6 @@ const getImgList = async () => {
   const result = await api.read()
   if (result.code == 'SUCCESS') {
     imgList.value = result.data
-    console.log(imgList)
   } else {
     // 提示错误信息
     ElMessage({

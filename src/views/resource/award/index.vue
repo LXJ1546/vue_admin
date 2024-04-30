@@ -50,9 +50,10 @@
               :src="item.url"
               style="margin-left: 2px"
             />
+            <div v-if="!scope.row.picture" style="width: 100px; height: 60px"></div>
           </template>
         </el-table-column>
-        <el-table-column label="日期" prop="date" />
+        <el-table-column label="日期" prop="date" sortable />
         <el-table-column label="视频链接" prop="video" :width="600" />
         <el-table-column label="操作" align="right" :width="300">
           <template #default="scope">
@@ -87,18 +88,18 @@
   </div>
   <el-dialog
     v-model="dialogFormVisible"
-    title="新增奖项"
+    :title="isAdd ? '新增奖项' : '修改奖项信息'"
     :width="600"
-    @close="handleCancel"
+    @close="handleCancel(formRef)"
   >
     <el-form :model="modalForm" :rules="rules" ref="formRef">
-      <el-form-item label="队伍" prop="team" required>
+      <el-form-item label="队伍" prop="team">
         <el-input v-model="modalForm.team" />
       </el-form-item>
-      <el-form-item label="标题" prop="title" required>
+      <el-form-item label="标题" prop="title">
         <el-input v-model="modalForm.title" />
       </el-form-item>
-      <el-form-item label="日期" prop="date" required>
+      <el-form-item label="日期" prop="date">
         <el-date-picker
           v-model="modalForm.date"
           type="date"
@@ -124,16 +125,16 @@
           <el-button type="primary" icon="Upload">点击上传</el-button>
         </el-upload>
       </el-form-item>
-      <el-form-item label="video" prop="视频链接">
+      <el-form-item label="视频链接" prop="video">
         <el-input v-model="modalForm.video" />
       </el-form-item>
     </el-form>
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="handleCancel">取消</el-button>
+        <el-button @click="handleCancel(formRef)">取消</el-button>
         <el-button
           type="primary"
-          @click="handleOk(formRef)"
+          @click="handleOk(formRef, 'award')"
           :loading="btnLoading"
         >
           确定
@@ -174,17 +175,6 @@ const modalForm = ref<Award>({
   title: '',
   video: '',
 })
-const initialForm = {
-  content: '',
-  date: '',
-  description: '',
-  picture: '',
-  id: 0,
-  tag: '',
-  team: '',
-  title: '',
-  video: '',
-}
 
 // 表单校验规则
 const rules = reactive({
@@ -192,13 +182,6 @@ const rules = reactive({
   title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
   date: [{ required: true, message: '请选择时间', trigger: 'change' }],
 })
-
-// const handleClose = () => {
-//   dialogFormVisible.value = false
-//   // 清空表单数据
-//   modalForm.value = initialForm
-//   fileList.value = []
-// }
 
 // 组件挂载时拿到数据
 onMounted(() => {
@@ -209,6 +192,7 @@ const {
   dialogFormVisible,
   loading,
   btnLoading,
+  isAdd,
   currentPage,
   pageSize,
   pagedTableData,
@@ -222,7 +206,6 @@ const {
   handleCancel,
   handleOk,
 } = useCrud({
-  initialForm: initialForm,
   modalForm: modalForm,
   fileList: fileList,
   tableData: awardData,

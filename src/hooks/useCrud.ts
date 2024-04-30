@@ -4,7 +4,6 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import type { UploadProps, FormInstance } from 'element-plus'
 import { getPictureUrl } from '@/utils/parsePic'
 export const useCrud = ({
-  initialForm,
   tableData,
   modalForm,
   fileList,
@@ -30,7 +29,6 @@ export const useCrud = ({
     // 更新上传图片列表
     fileList.value = images
   }
-
   // 删除上传图片
   const handleRemove: UploadProps['onRemove'] = (_image, images) => {
     fileList.value = images // 更新上传列表数据
@@ -69,19 +67,28 @@ export const useCrud = ({
   // 重置表单
   const resetForm = () => {
     // 清空表单数据
-    modalForm.value = initialForm
+    // 获取modalForm中的所有属性名
+    const keys = Object.keys(modalForm.value)
+    // 逐个清空属性值
+    keys.forEach((key) => {
+      if (key == 'id') {
+        modalForm.value[key] = 0
+      } else {
+        modalForm.value[key] = ''
+      }
+    })
     fileList.value = []
   }
   // "添加"按钮事件
   const handleAdd = () => {
-    dialogFormVisible.value = true
-    isAdd.value = true
     // 清空表单数据
     resetForm()
+    dialogFormVisible.value = true
+    isAdd.value = true
   }
 
   // 添加或者更新数据
-  const handleDataList = async () => {
+  const handleDataList = async (mark: string) => {
     // 按钮加载
     btnLoading.value = true
     const formData = new FormData()
@@ -95,9 +102,13 @@ export const useCrud = ({
         }
       }
     }
-    modalForm.value.picture = newPicture
+    if (mark == 'member') {
+      modalForm.value.avatar = newPicture
+    } else {
+      modalForm.value.picture = newPicture
+    }
     // 将模态框表单数据对象转换为JSON字符串并添加到formData
-    formData.append('award', JSON.stringify(modalForm.value))
+    formData.append(mark, JSON.stringify(modalForm.value))
     // 添加文件到formData
     fileList.value.forEach((file: any) => {
       formData.append('images', file.raw)
@@ -105,7 +116,8 @@ export const useCrud = ({
     try {
       if (isAdd.value) {
         // 发送新增请求
-        await doCreate(formData)
+        const response=await doCreate(formData)
+        console.log(response)
       } else {
         // 修改请求
         await doUpdate(formData)
@@ -179,7 +191,10 @@ export const useCrud = ({
   }
 
   //模态框"取消"按钮
-  const handleCancel = () => {
+  const handleCancel = (formref: FormInstance | undefined) => {
+    // 重置表单检验
+    if (!formref) return
+    formref.resetFields()
     if (isAdd.value) {
       isAdd.value = false
     }
@@ -189,12 +204,12 @@ export const useCrud = ({
   }
 
   //模态框"确定"按钮
-  const handleOk = async (formref: FormInstance | undefined) => {
+  const handleOk = async (formref: FormInstance | undefined, mark: string) => {
     if (!formref) return
     //校验表单
     await formref.validate((valid, fields) => {
       if (valid) {
-        handleDataList()
+        handleDataList(mark)
         // 清空表单数据
         resetForm()
       } else {
