@@ -22,7 +22,8 @@ router.beforeEach(async (to, from, next) => {
   if (token) {
     //登录成功，不能访问login，指向首页
     if (to.path === '/login') {
-      next({ path: '/' })
+      next({ path: '/admin' })
+      nprogress.done()
     } else {
       next()
       // if (username) {
@@ -43,10 +44,17 @@ router.beforeEach(async (to, from, next) => {
     }
   } else {
     //用户未登录
-    if (to.path === '/login') {
+    if (
+      to.path === '/login' ||
+      to.path === '/news' ||
+      to.path === '/member' ||
+      to.path === '/publication' ||
+      to.path === '/award' ||
+      to.path === '/'
+    ) {
       next()
     } else {
-      next({ path: '/login', query: { redirect: to.path } })
+      next({ path: '/', query: { redirect: to.path } })
     }
   }
 })

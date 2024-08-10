@@ -14,6 +14,9 @@ const useUserStore = defineStore('user', {
     menuRoutes: BasicRoutes, //仓库存储生成菜单需要数组（路由）
     username: '',
     avatar: '',
+    sex: '',
+    email: '',
+    role: '',
   }),
   getters: {},
   actions: {
@@ -21,23 +24,26 @@ const useUserStore = defineStore('user', {
     async userLogin(data: loginForm) {
       // 拿到请求结果
       const result: loginResponseData = await reqLogin(data)
-      if (result.code === 200) {
+      if (result.code === '200') {
         this.token = result.data.token as string
         // 本地存储一下,持久化
         SET_TOKEN(result.data.token as string)
-        //保证当前async函数返回一个成功的promise函数
+        // 保证当前async函数返回一个成功的promise函数
         return 'ok'
       } else {
         // 返回一个失败的Promise对象
-        return Promise.reject(new Error(result.data.message))
+        return Promise.reject(new Error(result.message))
       }
     },
-    // 获取用户信息的方法
+    // 获取用户信息的方法，当进入后台管理页面时调用，通过token拿到用户信息
     async userInfo() {
       const result = await getUserInfo()
-      if (result.code == 200) {
-        this.username = result.data.checkUser.username
-        this.avatar = result.data.checkUser.avatar
+      if (result.code == '200') {
+        this.username = result.data.name
+        this.avatar = result.data.avatar
+        this.sex = result.data.sex
+        this.email = result.data.email
+        this.role = result.data.role
         return 'ok'
       } else {
         return Promise.reject('用户信息获取失败')
@@ -47,8 +53,36 @@ const useUserStore = defineStore('user', {
       this.token = ''
       this.username = ''
       this.avatar = ''
+      this.sex = ''
+      this.email = ''
+      this.role = ''
       REMOVE_TOKEN()
     },
+    // async userLogin(data: loginForm) {
+    //   // 拿到请求结果
+    //   const result: loginResponseData = await reqLogin(data)
+    //   if (result.code === 200) {
+    //     this.token = result.data.token as string
+    //     // 本地存储一下,持久化
+    //     SET_TOKEN(result.data.token as string)
+    //     //保证当前async函数返回一个成功的promise函数
+    //     return 'ok'
+    //   } else {
+    //     // 返回一个失败的Promise对象
+    //     return Promise.reject(new Error(result.data.message))
+    //   }
+    // },
+    // // 获取用户信息的方法
+    // async userInfo() {
+    //   const result = await getUserInfo()
+    //   if (result.code == 200) {
+    //     this.username = result.data.checkUser.username
+    //     this.avatar = result.data.checkUser.avatar
+    //     return 'ok'
+    //   } else {
+    //     return Promise.reject('用户信息获取失败')
+    //   }
+    // },
   },
 })
 export default useUserStore

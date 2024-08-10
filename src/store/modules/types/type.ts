@@ -5,4 +5,7 @@ export interface UserState {
   menuRoutes: RouteRecordRaw[]
   username: string
   avatar: string
+  sex: string
+  email: string
+  role: string
 }

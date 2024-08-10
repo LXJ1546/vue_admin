@@ -44,7 +44,7 @@ const handleFullScreen = () => {
 
 const handleLogout = () => {
   useStore.userLogout()
-  router.replace({ path: '/login', query: { redirect: route.path } })
+  router.replace({ path: '/', query: { redirect: route.path } })
 }
 </script>
 

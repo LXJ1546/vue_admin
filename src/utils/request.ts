@@ -12,6 +12,7 @@ request.interceptors.request.use((config) => {
   // 返回配置对象
   // config配置对象，headers请求头，经常给服务器端携带公共的请求参数
   const useStore = useUserStore()
+  // 这里加上了请求头，便于进入后台管理页面后通过token拿到用户数据
   if (useStore.token) {
     config.headers.token = useStore.token
   }

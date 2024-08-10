@@ -31,7 +31,8 @@ function createUserList() {
 export default [
   // 用户登录接口
   {
-    url: '/viva525Api/user/login', //请求地址
+    // url: '/viva525Api/user/login', //请求地址
+    url: '/viva525/user/login', //请求地址
     method: 'post', //请求方式
     response: ({ body }) => {
       //获取请求体携带过来的用户名与密码
@@ -51,7 +52,8 @@ export default [
   },
   // 获取用户信息
   {
-    url: '/viva525Api/user/info',
+    // url: '/viva525Api/user/info',
+    url: '/viva525/user/info',
     method: 'get',
     response: (request) => {
       //获取请求头携带token

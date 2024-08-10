@@ -31,9 +31,8 @@
         <el-table-column type="expand">
           <template #default="props">
             <div style="padding: 5px">
-              <p>概要：{{ props.row.summary }}</p>
               <p style="padding-top: 8px; line-height: 20px">
-                描述：{{ props.row.content }}
+                描述：{{ props.row.description }}
               </p>
             </div>
           </template>
@@ -43,16 +42,17 @@
           <template #default="scope">
             <n-image
               v-if="scope.row.picture"
-              width="60"
-              height="40"
+              width="120"
+              height="70"
               :src="scope.row.picture"
             />
             <div v-else style="width: 60px; height: 40px"></div>
           </template>
         </el-table-column>
-        <el-table-column label="作者" prop="author" />
-        <el-table-column label="日期" prop="date" />
-        <el-table-column label="标签" prop="tag" />
+        <el-table-column label="作者" prop="author" :width="400" />
+        <el-table-column label="日期" prop="date" sortable />
+        <el-table-column label="类型" prop="type" />
+        <el-table-column label="地点" prop="place" />
         <el-table-column label="操作" align="right" :width="300">
           <template #default="scope">
             <el-button
@@ -108,8 +108,12 @@
           <el-button type="primary" icon="Upload">点击上传</el-button>
         </el-upload>
       </el-form-item>
+
       <el-form-item label="作者" prop="author">
         <el-input v-model="modalForm.author" />
+      </el-form-item>
+      <el-form-item label="类型" prop="type">
+        <el-input v-model="modalForm.type" />
       </el-form-item>
       <el-form-item label="日期" prop="date">
         <el-date-picker
@@ -117,16 +121,14 @@
           type="date"
           label="日期"
           placeholder="选择日期"
+          value-format="YYYY-MM-DD"
         />
       </el-form-item>
-      <el-form-item label="标签" prop="tag">
-        <el-input v-model="modalForm.tag" />
-      </el-form-item>
-      <el-form-item label="概要" prop="summary">
-        <el-input v-model="modalForm.summary" type="textarea" :rows="2" />
+      <el-form-item label="地点" prop="place">
+        <el-input v-model="modalForm.place" />
       </el-form-item>
       <el-form-item label="描述" prop="content">
-        <el-input v-model="modalForm.content" type="textarea" :rows="4" />
+        <el-input v-model="modalForm.description" type="textarea" :rows="4" />
       </el-form-item>
     </el-form>
     <template #footer>
@@ -163,14 +165,15 @@ const fileList = ref<UploadUserFile[]>([])
 // 表单的引用
 const formRef = ref<FormInstance>()
 // 模态框表单数据
-const modalForm = ref<News>({
+const modalForm = reactive<News>({
   author: '',
-  content: '',
+  // content: '',
+  description: '',
   date: '',
   id: 0,
   picture: '',
-  summary: '',
-  tag: '',
+  type: '',
+  place: '',
   title: '',
 })
 
@@ -179,7 +182,7 @@ const rules = reactive({
   title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
   author: [{ required: true, message: '请输入作者', trigger: 'blur' }],
   date: [{ required: true, message: '请选择日期', trigger: 'change' }],
-  content: [{ required: true, message: '请输入内容描述', trigger: 'blur' }],
+  place: [{ required: true, message: '请输入地点', trigger: 'blur' }],
 })
 
 // 组件挂载时拿到数据
@@ -209,6 +212,7 @@ const {
   fileList: fileList,
   tableData: newsData,
   doRead: api.read,
+  doUpload: api.upload,
   doCreate: api.create,
   doUpdate: api.update,
   doDelete: api.delete,

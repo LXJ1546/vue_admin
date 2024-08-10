@@ -32,27 +32,37 @@
           <template #default="props">
             <div style="padding: 5px">
               <p style="padding-top: 8px; line-height: 20px">
-                摘要：{{ props.row.content }}
+                关键词：{{ props.row.keyword }}
+              </p>
+              <p style="padding-top: 8px; line-height: 20px">
+                摘要：{{ props.row.description }}
               </p>
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="作者" prop="author" :width="400" />
-        <el-table-column label="标题" prop="title" :width="460" />
+        <el-table-column label="标题" prop="title" :width="400" />
+        <el-table-column label="作者" prop="author" :width="300" />
+
         <el-table-column label="照片">
           <template #default="scope">
             <n-image
               v-if="scope.row.picture"
-              width="100"
-              height="50"
+              width="120"
+              height="70"
               :src="scope.row.picture"
             />
             <div v-else style="width: 100px; height: 50px"></div>
           </template>
         </el-table-column>
-        <el-table-column label="期刊" prop="institution" />
-        <el-table-column label="日期" prop="date" />
-        <el-table-column label="关键词" prop="keywords" :width="400" />
+        <el-table-column
+          label="期刊会议缩写"
+          prop="institutionAbb"
+          :width="150"
+        />
+        <el-table-column label="期刊会议" prop="institution" />
+        <el-table-column label="年份" prop="year" :width="100" />
+        <el-table-column label="DOI" prop="doi" :width="200" />
+        <el-table-column label="PDF" prop="link" :width="200" />
         <el-table-column label="操作" align="right" :width="300">
           <template #default="scope">
             <el-button
@@ -91,11 +101,11 @@
     @close="handleCancel(formRef)"
   >
     <el-form :model="modalForm" :rules="rules" ref="formRef">
-      <el-form-item label="作者" prop="author">
-        <el-input v-model="modalForm.author" />
-      </el-form-item>
       <el-form-item label="标题" prop="title">
         <el-input v-model="modalForm.title" />
+      </el-form-item>
+      <el-form-item label="作者" prop="author">
+        <el-input v-model="modalForm.author" />
       </el-form-item>
       <el-form-item label="图片" prop="picture">
         <el-upload
@@ -111,17 +121,26 @@
           <el-button type="primary" icon="Upload">点击上传</el-button>
         </el-upload>
       </el-form-item>
-      <el-form-item label="期刊" prop="institution">
+      <el-form-item label="期刊会议缩写" prop="institutionAbb">
+        <el-input v-model="modalForm.institutionAbb" />
+      </el-form-item>
+      <el-form-item label="期刊会议" prop="institution">
         <el-input v-model="modalForm.institution" />
       </el-form-item>
-      <el-form-item label="日期" prop="date">
-        <el-input v-model="modalForm.date" />
+      <el-form-item label="年份" prop="year">
+        <el-input v-model="modalForm.year" />
       </el-form-item>
-      <el-form-item label="关键词" prop="keywords">
-        <el-input v-model="modalForm.keywords" />
+      <el-form-item label="DOI" prop="doi">
+        <el-input v-model="modalForm.doi" />
+      </el-form-item>
+      <el-form-item label="PDF" prop="pdf">
+        <el-input v-model="modalForm.link" />
+      </el-form-item>
+      <el-form-item label="关键词" prop="keyword">
+        <el-input v-model="modalForm.keyword" type="textarea" :rows="2" />
       </el-form-item>
       <el-form-item label="摘要" prop="content">
-        <el-input v-model="modalForm.content" type="textarea" :rows="3" />
+        <el-input v-model="modalForm.description" type="textarea" :rows="3" />
       </el-form-item>
     </el-form>
     <template #footer>
@@ -157,24 +176,25 @@ const fileList = ref<UploadUserFile[]>([])
 // 表单的引用
 const formRef = ref<FormInstance>()
 // 模态框表单数据
-const modalForm = ref<Publish>({
+const modalForm = reactive<Publish>({
   id: 0,
   author: '',
   title: '',
   institution: '',
-  content: '',
+  description: '',
   picture: '',
-  linkURL: '',
-  keywords: '',
-  linkPDF: '',
-  date: '',
+  link: '',
+  keyword: '',
+  institutionAbb: '',
+  year: '',
+  doi: '',
 })
 
 // 表单校验规则
 const rules = reactive({
   author: [{ required: true, message: '请输入作者', trigger: 'blur' }],
   title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
-  institution: [{ required: true, message: '请输入期刊', trigger: 'blur' }],
+  institution: [{ required: true, message: '请输入期刊会议', trigger: 'blur' }],
 })
 
 // 组件挂载时拿到数据
@@ -204,6 +224,7 @@ const {
   fileList: fileList,
   tableData: publishData,
   doRead: api.read,
+  doUpload: api.upload,
   doCreate: api.create,
   doUpdate: api.update,
   doDelete: api.delete,

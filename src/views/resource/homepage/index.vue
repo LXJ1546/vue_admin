@@ -8,10 +8,10 @@
           <n-space align="center" style="overflow: auto">
             <n-card v-for="(item, index) in imgList" :key="index" class="card">
               <div class="picture">
-                <n-image width="300" height="113" :src="item.picture" />
+                <n-image width="300" height="150" :src="item.picture" />
               </div>
               <n-space justify="space-evenly" style="margin-top: 16px">
-                <el-button @click="handleEdit">修改</el-button>
+                <el-button @click="handleEdit(item.id)">修改</el-button>
                 <el-button @click="handleDelete(item.id)">删除</el-button>
               </n-space>
             </n-card>
@@ -69,7 +69,7 @@ import { useRoute } from 'vue-router'
 import { NCard, NImageGroup, NSpace, NImage } from 'naive-ui'
 import type { UploadUserFile, UploadProps } from 'element-plus'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getPictureUrl } from '@/utils/parsePic'
+// import { getPictureUrl } from '@/utils/parsePic'
 
 const route = useRoute()
 // 是否显示模态框
@@ -102,23 +102,48 @@ const addImage: UploadProps['onChange'] = async (_image, images) => {
   const formData = new FormData()
   // 添加文件到formData
   fileList1.value.forEach((file: any) => {
-    formData.append('images', file.raw)
+    // formData.append('images', file.raw)
+    formData.append('file', file.raw)
   })
   try {
-    await api.create(formData)
-    // 重新获取列表
-    getImgList()
-    // 提示成功信息
-    ElMessage({
-      message: '上传成功！',
-      type: 'success',
-    })
+    // 先调用接口将图片上传到本地文件夹，并获取到相对路径
+    const response = await api.upload(formData)
+    if (response.code == 'SUCCESS') {
+      // 构建Award对象，包含图片地址
+      const award = {
+        picture: response.data,
+      }
+      // await api.create(formData)
+      // 再将路径通过创建方法添加到数据库中
+      const response1 = await api.create(award)
+      if (response1.code == 'SUCCESS') {
+        // 重新获取列表
+        getImgList()
+        // 提示成功信息
+        ElMessage({
+          message: '添加成功！',
+          type: 'success',
+        })
+      } else {
+        // 提示错误信息
+        ElMessage({
+          message: '添加失败！',
+          type: 'error',
+        })
+      }
+    } else {
+      // 提示错误信息
+      ElMessage({
+        message: '添加失败！',
+        type: 'error',
+      })
+    }
     // 清空上传列表
     fileList1.value = []
   } catch (error) {
     // 提示错误信息
     ElMessage({
-      message: '上传失败！',
+      message: '添加失败！',
       type: 'error',
     })
     console.log(error)
@@ -126,18 +151,18 @@ const addImage: UploadProps['onChange'] = async (_image, images) => {
 }
 
 // 点击修改按钮
-const handleEdit = (item: any) => {
+const handleEdit = (id: number) => {
   dialogFormVisible.value = true
-  // 拿到该图片id
-  imgId.value = item.id
-  let list = []
-  // 创建URL对象
-  if (item.picture) {
-    // 拿到图片链接和名字
-    list = getPictureUrl(item.picture)
-    // 更新上传列表
-    fileList.value = list
-  }
+  // 拿到该图片id,用于后续更新匹配
+  imgId.value = id
+  // let list = []
+  // // 创建URL对象
+  // if (item.picture) {
+  //   // 拿到图片链接和名字
+  //   list = getPictureUrl(item.picture)
+  //   // 更新上传列表
+  //   fileList.value = list
+  // }
 }
 
 //删除图片逻辑
@@ -174,22 +199,56 @@ const updateImage = async () => {
   // 只能通过length判断，不能判断是否为空
   if (fileList.value.length == 0) return
   const formData = new FormData()
-  let item = { id: imgId.value, picture: '' }
-  // 将模态框表单数据对象转换为JSON字符串并添加到formData
-  formData.append('carousel', JSON.stringify(item))
+  // let item = { id: imgId.value, picture: '' }
+  // // 将模态框表单数据对象转换为JSON字符串并添加到formData
+  // formData.append('carousel', JSON.stringify(item))
   // 添加文件到formData
   fileList.value.forEach((file: any) => {
-    formData.append('images', file.raw)
+    // formData.append('images', file.raw)
+    formData.append('file', file.raw)
   })
   try {
-    await api.update(formData)
-    // 重新获取列表
-    getImgList()
-    // 提示成功信息
-    ElMessage({
-      message: '修改成功！',
-      type: 'success',
-    })
+    // 先调用接口将图片上传到本地文件夹，并获取到相对路径
+    const response = await api.upload(formData)
+    if (response.code == 'SUCCESS') {
+      // 构建Award对象，包含图片地址
+      const award = {
+        id: imgId.value,
+        picture: response.data,
+      }
+      // await api.create(formData)
+      // 再将路径通过创建方法添加到数据库中
+      const response1 = await api.update(award)
+      if (response1.code == 'SUCCESS') {
+        // 重新获取列表
+        getImgList()
+        // 提示成功信息
+        ElMessage({
+          message: '修改成功！',
+          type: 'success',
+        })
+      } else {
+        // 提示错误信息
+        ElMessage({
+          message: '修改失败！',
+          type: 'error',
+        })
+      }
+    } else {
+      // 提示错误信息
+      ElMessage({
+        message: '修改失败！',
+        type: 'error',
+      })
+    }
+    // await api.update(formData)
+    // // 重新获取列表
+    // getImgList()
+    // // 提示成功信息
+    // ElMessage({
+    //   message: '修改成功！',
+    //   type: 'success',
+    // })
   } catch (error) {
     // 提示错误信息
     ElMessage({

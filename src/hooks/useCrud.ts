@@ -1,14 +1,15 @@
 // @ts-nocheck
-import { ref, computed } from 'vue'
+import { ref, computed, toRaw } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { UploadProps, FormInstance } from 'element-plus'
-import { getPictureUrl } from '@/utils/parsePic'
+// import { getPictureUrl } from '@/utils/parsePic'
 export const useCrud = ({
   tableData,
   modalForm,
   fileList,
   doRead,
   doCreate,
+  doUpload,
   doUpdate,
   doDelete,
 }) => {
@@ -50,31 +51,39 @@ export const useCrud = ({
   // 获取并展示数据
   const getDataList = async () => {
     loading.value = true
-    const result = await doRead()
-    if (result.code == 'SUCCESS') {
+    try {
+      const result = await doRead()
+      if (result.code == 'SUCCESS') {
+        loading.value = false
+        tableData.value = result.data
+        // console.log(tableData.value)
+      } else {
+        loading.value = false
+        // 提示错误信息
+        ElMessage({
+          message: '信息获取失败！',
+          type: 'error',
+        })
+      }
+    } catch (error) {
+      // 请求出现错误时
       loading.value = false
-      tableData.value = result.data
-      console.log(tableData.value)
-    } else {
+    } finally {
+      // 无论请求成功或失败，都将loading.value设置为false
       loading.value = false
-      // 提示错误信息
-      ElMessage({
-        message: '信息获取失败！',
-        type: 'error',
-      })
     }
   }
   // 重置表单
   const resetForm = () => {
     // 清空表单数据
     // 获取modalForm中的所有属性名
-    const keys = Object.keys(modalForm.value)
+    const keys = Object.keys(modalForm)
     // 逐个清空属性值
     keys.forEach((key) => {
       if (key == 'id') {
-        modalForm.value[key] = 0
+        modalForm[key] = 0
       } else {
-        modalForm.value[key] = ''
+        modalForm[key] = ''
       }
     })
     fileList.value = []
@@ -84,44 +93,41 @@ export const useCrud = ({
     // 清空表单数据
     resetForm()
     dialogFormVisible.value = true
+    // 判断为添加操作
     isAdd.value = true
   }
 
-  // 添加或者更新数据
-  const handleDataList = async (mark: string) => {
-    // 按钮加载
-    btnLoading.value = true
+  //添加和更新时涉及到图片上传操作，需要先上传拿到相对地址
+  const handleUpload = async () => {
     const formData = new FormData()
-    //构造新的图片链接，当更新的时候才执行
-    let newPicture = ''
-    if (fileList.value) {
-      for (const pic of fileList.value) {
-        // 排除上传的情况
-        if (pic.raw == undefined) {
-          newPicture += `${pic.url}`
-        }
-      }
-    }
-    if (mark == 'member') {
-      modalForm.value.avatar = newPicture
-    } else {
-      modalForm.value.picture = newPicture
-    }
-    // 将模态框表单数据对象转换为JSON字符串并添加到formData
-    formData.append(mark, JSON.stringify(modalForm.value))
     // 添加文件到formData
     fileList.value.forEach((file: any) => {
-      formData.append('images', file.raw)
+      formData.append('file', file.raw)
     })
-    try {
-      if (isAdd.value) {
-        // 发送新增请求
-        const response = await doCreate(formData)
-        console.log(response)
-      } else {
-        // 修改请求
-        await doUpdate(formData)
-      }
+    // 先调用接口将图片上传到本地文件夹，并获取到相对路径
+    const response = await doUpload(formData)
+    if (response.code == 'SUCCESS') {
+      return response.data
+    } else {
+      // 提示错误信息
+      ElMessage({
+        message: '图片上传失败！',
+        type: 'error',
+      })
+      console.log(response.message)
+      return null
+    }
+  }
+
+  const handleAddAndUpdate = async (modalFormCopy: any) => {
+    let response1
+    if (isAdd.value) {
+      // 将表单数据通过添加api添加到数据库中
+      response1 = await doCreate(modalFormCopy)
+    } else {
+      response1 = await doUpdate(modalFormCopy)
+    }
+    if (response1.code == 'SUCCESS') {
       // 重新获取列表
       getDataList()
       // 提示成功信息
@@ -129,35 +135,110 @@ export const useCrud = ({
         message: isAdd.value ? '添加成功！' : '修改成功！',
         type: 'success',
       })
-    } catch (error) {
+    } else {
       // 提示错误信息
       ElMessage({
         message: isAdd.value ? '添加失败！' : '修改失败！',
         type: 'error',
       })
-      console.log(error)
+      console.log(response1.message)
     }
+  }
+
+  // 添加或者更新数据
+  const handleDataList = async (mark: string) => {
+    // 按钮加载
+    btnLoading.value = true
+    // 创建 modalForm 的副本,在副本的基础上进行修改
+    let modalFormCopy = { ...toRaw(modalForm) }
+    // 如果改动了图片，则会调用上传api
+    if (fileList.value.length != 0) {
+      // console.log('yes', modalFormCopy)
+      const uploadResult = await handleUpload()
+      if (uploadResult) {
+        if (mark == 'member') {
+          modalFormCopy.avatar = uploadResult
+        } else {
+          modalFormCopy.picture = uploadResult
+        }
+      }
+    }
+    // 最后再执行数据写入操作
+    await handleAddAndUpdate(modalFormCopy)
     // 加载结束
     btnLoading.value = false
     isAdd.value = false
     // 关闭模态框
     dialogFormVisible.value = false
+
+    // const formData = new FormData()
+    // //构造新的图片链接，当更新的时候才执行
+    // let newPicture = ''
+    // if (fileList.value) {
+    //   for (const pic of fileList.value) {
+    //     // 排除上传的情况
+    //     if (pic.raw == undefined) {
+    //       newPicture += `${pic.url}`
+    //     }
+    //   }
+    // }
+    // if (mark == 'member') {
+    //   modalForm.value.avatar = newPicture
+    // } else {
+    //   modalForm.value.picture = newPicture
+    // }
+    // // 将模态框表单数据对象转换为JSON字符串并添加到formData
+    // formData.append(mark, JSON.stringify(modalForm.value))
+    // // 添加文件到formData
+    // fileList.value.forEach((file: any) => {
+    //   formData.append('images', file.raw)
+    // })
+    // try {
+    //   if (isAdd.value) {
+    //     // 发送新增请求
+    //     const response = await doCreate(formData)
+    //     console.log(response)
+    //   } else {
+    //     // 修改请求
+    //     await doUpdate(formData)
+    //   }
+    //   // 重新获取列表
+    //   getDataList()
+    //   // 提示成功信息
+    //   ElMessage({
+    //     message: isAdd.value ? '添加成功！' : '修改成功！',
+    //     type: 'success',
+    //   })
+    // } catch (error) {
+    //   // 提示错误信息
+    //   ElMessage({
+    //     message: isAdd.value ? '添加失败！' : '修改失败！',
+    //     type: 'error',
+    //   })
+    //   console.log(error)
+    // }
+    // // 加载结束
+    // btnLoading.value = false
+    // isAdd.value = false
+    // // 关闭模态框
+    // dialogFormVisible.value = false
   }
 
   // 更新按钮事件
   const handleEdit = (_index: number, row: any) => {
     dialogFormVisible.value = true
     isAdd.value = false
-    let list = []
+    // let list = []
     // 将表格该行的信息赋给表单
-    modalForm.value = { ...modalForm.value, ...row }
-    // 创建URL对象
-    if (row.picture) {
-      // 拿到图片链接和名字
-      list = getPictureUrl(row.picture)
-      // 更新上传列表
-      fileList.value = list
-    }
+    Object.assign(modalForm, row) // 合并对象
+    // modalForm = { ...modalForm, ...row }
+    // // 创建URL对象
+    // if (row.picture) {
+    //   // 拿到图片链接和名字
+    //   list = getPictureUrl(row.picture)
+    //   // 更新上传列表
+    //   fileList.value = list
+    // }
   }
 
   // 删除按钮事件
@@ -170,14 +251,24 @@ export const useCrud = ({
       .then(async () => {
         try {
           // 调用删除接口，传入数据的id
-          await doDelete(row.id)
-          // 重新获取列表
-          getDataList()
-          // 提示成功信息
-          ElMessage({
-            message: '删除成功！',
-            type: 'success',
-          })
+          const result = await doDelete(row.id)
+          console.log(result)
+          if (result.code == 'SUCCESS') {
+            // 重新获取列表
+            getDataList()
+            // 提示成功信息
+            ElMessage({
+              message: '删除成功！',
+              type: 'success',
+            })
+          } else {
+            // 提示错误信息
+            ElMessage({
+              message: '删除失败！',
+              type: 'error',
+            })
+            console.log(result.message)
+          }
         } catch (error) {
           // 提示错误信息
           ElMessage({

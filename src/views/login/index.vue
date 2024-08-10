@@ -1,62 +1,65 @@
 <template>
-  <div class="bg-cover">
-    <div class="container">
-      <div class="left">
-        <img src="@/assets/images/visual.svg" alt="可视化图标" />
-      </div>
-      <div class="right">
-        <div class="title">
-          <img src="@/assets/icons/owl.svg" alt="可视化图标" />
-          <h2>CQU VIVALAB</h2>
+  <NavigationBar>
+    <div class="bg-cover">
+      <div class="container">
+        <div class="left">
+          <img src="@/assets/images/visual.svg" alt="可视化图标" />
         </div>
-        <el-form style="text-align: center; padding-top: 10px">
-          <el-form-item>
-            <el-input
-              class="name"
-              placeholder="请输入用户名"
+        <div class="right">
+          <div class="title">
+            <img src="@/assets/icons/owl.svg" alt="可视化图标" />
+            <h2>CQU VIVALAB</h2>
+          </div>
+          <el-form style="text-align: center; padding-top: 10px">
+            <el-form-item>
+              <el-input
+                class="name"
+                placeholder="请输入用户名"
+                size="large"
+                :prefix-icon="User"
+                :maxlength="20"
+                v-model="formInput.username"
+              ></el-input>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 0">
+              <el-input
+                class="name"
+                type="password"
+                placeholder="请输入密码"
+                size="large"
+                :prefix-icon="Lock"
+                :maxlength="20"
+                v-model="formInput.password"
+                show-password
+              ></el-input>
+            </el-form-item>
+          </el-form>
+          <el-checkbox v-model="remember" size="large">记住我</el-checkbox>
+          <div>
+            <el-button size="large" class="btn1" color="#228B22" plain>
+              注册
+            </el-button>
+            <el-button
+              :loading="loading"
               size="large"
-              :prefix-icon="User"
-              :maxlength="20"
-              v-model="formInput.username"
-            ></el-input>
-          </el-form-item>
-          <el-form-item style="margin-bottom: 0">
-            <el-input
-              class="name"
-              type="password"
-              placeholder="请输入密码"
-              size="large"
-              :prefix-icon="Lock"
-              :maxlength="20"
-              v-model="formInput.password"
-              show-password
-            ></el-input>
-          </el-form-item>
-        </el-form>
-        <el-checkbox v-model="remember" size="large">记住我</el-checkbox>
-        <div>
-          <el-button size="large" class="btn1" color="#228B22" plain>
-            注册
-          </el-button>
-          <el-button
-            :loading="loading"
-            size="large"
-            class="btn2"
-            color="#228B22"
-            @click="handleLogin"
-            plain
-          >
-            登录
-          </el-button>
+              class="btn2"
+              color="#228B22"
+              @click="handleLogin"
+              plain
+            >
+              登录
+            </el-button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <Vcode :show="isShow" @success="onSuccess" @close="onClose" />
+    <Vcode :show="isShow" @success="onSuccess" @close="onClose" />
+  </NavigationBar>
 </template>
 
 <script setup lang="ts">
 import { User, Lock } from '@element-plus/icons-vue'
+import NavigationBar from '@/components/navigation/index.vue'
 import { ref, reactive } from 'vue'
 import Vcode from 'vue3-puzzle-vcode'
 import useUserStore from '@/store/modules/user'
@@ -124,7 +127,7 @@ const onSuccess = () => {
   //跳转到首页
   // 判断登录时是否有query参数，如果有就往query参数跳转，没有则跳首页
   const redirect: any = route.query.redirect
-  router.push({ path: redirect || '/' })
+  router.push({ path: redirect || '/admin' })
   //登录成功的提示信息
   ElNotification({
     type: 'success',
@@ -138,7 +141,7 @@ const onSuccess = () => {
 <style scoped>
 .bg-cover {
   width: 100%;
-  height: 100vh;
+  height: calc(100vh - 70px);
   background: url('@/assets/images/login_bg.webp') no-repeat;
   background-size: cover;
   display: flex;

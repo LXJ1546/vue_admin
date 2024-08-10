@@ -1,5 +1,55 @@
 export const BasicRoutes = [
   {
+    name: 'Home', //命名路由，权限用到
+    path: '/',
+    component: () => import('@/views/publicHome/index.vue'),
+    meta: {
+      title: '首页',
+      icon: '',
+      hidden: true,
+    },
+  },
+  {
+    name: 'News', //命名路由，权限用到
+    path: '/news',
+    component: () => import('@/views/publicNews/index.vue'),
+    meta: {
+      title: '新闻',
+      icon: '',
+      hidden: true,
+    },
+  },
+  {
+    name: 'Member', //命名路由，权限用到
+    path: '/member',
+    component: () => import('@/views/publicMember/index.vue'),
+    meta: {
+      title: '成员',
+      icon: '',
+      hidden: true,
+    },
+  },
+  {
+    name: 'Publication', //命名路由，权限用到
+    path: '/publication',
+    component: () => import('@/views/publicPublication/index.vue'),
+    meta: {
+      title: '发表',
+      icon: '',
+      hidden: true,
+    },
+  },
+  {
+    name: 'Award', //命名路由，权限用到
+    path: '/award',
+    component: () => import('@/views/publicAward/index.vue'),
+    meta: {
+      title: '奖项',
+      icon: '',
+      hidden: true,
+    },
+  },
+  {
     name: 'Login', //命名路由，权限用到
     path: '/login',
     component: () => import('@/views/login/index.vue'),
@@ -9,20 +59,21 @@ export const BasicRoutes = [
       hidden: true,
     },
   },
+  // 后台管理的主页
   {
-    name: 'Layout',
-    path: '/',
+    name: 'Admin',
+    path: '/admin',
     component: () => import('@/layout/index.vue'),
     meta: {
       title: '',
       icon: '',
       hidden: true,
     },
-    redirect: '/home',
+    redirect: '/admin/home',
     children: [
       {
-        name: 'Home',
-        path: '/home',
+        name: 'AdminHome',
+        path: '/admin/home',
         component: () => import('@/views/home/index.vue'),
         meta: {
           title: '首页',
@@ -32,20 +83,21 @@ export const BasicRoutes = [
       },
     ],
   },
+  // 后台管理的资源管理
   {
     name: 'Resource',
-    path: '/res',
+    path: '/admin/res',
     component: () => import('@/layout/index.vue'),
     meta: {
       title: '资源管理',
       icon: 'SetUp',
       hidden: false,
     },
-    redirect: '/res/homepage',
+    redirect: '/admin/res/homepage',
     children: [
       {
-        name: 'Homepage',
-        path: '/res/homepage',
+        name: 'AdminHomepage',
+        path: '/admin/res/homepage',
         component: () => import('@/views/resource/homepage/index.vue'),
         meta: {
           title: '首页管理',
@@ -54,8 +106,8 @@ export const BasicRoutes = [
         },
       },
       {
-        name: 'Member',
-        path: '/res/member',
+        name: 'AdminMember',
+        path: '/admin/res/member',
         component: () => import('@/views/resource/member/index.vue'),
         meta: {
           title: '成员管理',
@@ -64,8 +116,8 @@ export const BasicRoutes = [
         },
       },
       {
-        name: 'News',
-        path: '/res/news',
+        name: 'AdminNews',
+        path: '/admin/res/news',
         component: () => import('@/views/resource/news/index.vue'),
         meta: {
           title: '新闻管理',
@@ -74,8 +126,8 @@ export const BasicRoutes = [
         },
       },
       {
-        name: 'Publish',
-        path: '/res/publish',
+        name: 'AdminPublish',
+        path: '/admin/res/publish',
         component: () => import('@/views/resource/publish/index.vue'),
         meta: {
           title: '发表管理',
@@ -84,8 +136,8 @@ export const BasicRoutes = [
         },
       },
       {
-        name: 'Award',
-        path: '/res/award',
+        name: 'AdminAward',
+        path: '/admin/res/award',
         component: () => import('@/views/resource/award/index.vue'),
         meta: {
           title: '奖项管理',
@@ -94,8 +146,8 @@ export const BasicRoutes = [
         },
       },
       {
-        name: 'Picture',
-        path: '/res/picture',
+        name: 'AdminPicture',
+        path: '/admin/res/picture',
         component: () => import('@/views/resource/picture/index.vue'),
         meta: {
           title: '画廊管理',
@@ -107,18 +159,18 @@ export const BasicRoutes = [
   },
   {
     name: 'PMS',
-    path: '/pms',
+    path: '/admin/pms',
     component: () => import('@/layout/index.vue'),
     meta: {
       title: '权限管理',
       icon: 'Lock',
       hidden: false,
     },
-    redirect: '/pms/menu',
+    redirect: '/admin/pms/menu',
     children: [
       {
-        name: 'Menu',
-        path: '/pms/menu',
+        name: 'AdminMenu',
+        path: '/admin/pms/menu',
         component: () => import('@/views/pms/menu/index.vue'),
         meta: {
           title: '菜单管理',
@@ -127,8 +179,8 @@ export const BasicRoutes = [
         },
       },
       {
-        name: 'Role',
-        path: '/pms/role',
+        name: 'AdminRole',
+        path: '/admin/pms/role',
         component: () => import('@/views/pms/role/index.vue'),
         meta: {
           title: '角色管理',
@@ -137,8 +189,8 @@ export const BasicRoutes = [
         },
       },
       {
-        name: 'User',
-        path: '/pms/user',
+        name: 'AdminUser',
+        path: '/admin/pms/user',
         component: () => import('@/views/pms/user/index.vue'),
         meta: {
           title: '用户管理',

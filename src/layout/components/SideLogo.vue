@@ -1,5 +1,5 @@
 <template>
-  <router-link to="/" class="logo_container">
+  <router-link to="/admin" class="logo_container">
     <img :src="settings.logo" class="image" />
     <h2 class="title" :class="{ fold: settingStore.fold ? true : false }">
       {{ settings.title }}

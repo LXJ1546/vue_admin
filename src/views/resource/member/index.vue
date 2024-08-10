@@ -61,10 +61,10 @@
           </template>
         </el-table-column>
         <el-table-column label="类型" prop="type" />
-        <el-table-column label="身份" prop="level" />
+        <el-table-column label="身份" prop="identity" />
         <el-table-column label="研究方向" prop="research" :width="300" />
         <el-table-column label="年份" prop="year" sortable />
-        <el-table-column label="就读/就职" prop="whereabouts" />
+        <el-table-column label="就读/就职" prop="whereabouts" :width="250" />
         <el-table-column label="手机" prop="phone" />
         <el-table-column label="邮箱" prop="email" />
         <el-table-column label="操作" align="right" :width="300">
@@ -111,15 +111,15 @@
       <el-form-item label="类型" prop="type">
         <el-select v-model="modalForm.type" placeholder="请选择" clearable>
           <el-option
-            v-for="item in ['学生', '老师', '合作老师']"
+            v-for="item in ['指导老师', '在读研究生', '在读本科生', '毕业生']"
             :key="item"
             :label="item"
             :value="item"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="身份" prop="level">
-        <el-input v-model="modalForm.level" />
+      <el-form-item label="身份" prop="identity">
+        <el-input v-model="modalForm.identity" />
       </el-form-item>
       <el-form-item label="年份" prop="year">
         <el-input v-model="modalForm.year" />
@@ -132,6 +132,9 @@
       </el-form-item>
       <el-form-item label="邮箱" prop="email">
         <el-input v-model="modalForm.email" />
+      </el-form-item>
+      <el-form-item label="研究方向" prop="research">
+        <el-input v-model="modalForm.research" />
       </el-form-item>
       <el-form-item label="描述" prop="description">
         <el-input v-model="modalForm.description" type="textarea" :rows="3" />
@@ -192,13 +195,14 @@ const fileList = ref<UploadUserFile[]>([])
 // 表单的引用
 const formRef = ref<FormInstance>()
 // 模态框表单数据
-const modalForm = ref<Member>({
-  address: '',
+const modalForm = reactive<Member>({
+  // address: '',
   avatar: '',
   description: '',
   email: '',
   id: 0,
-  level: '',
+  // level: '',
+  identity: '',
   name: '',
   phone: '',
   research: '',
@@ -211,8 +215,8 @@ const modalForm = ref<Member>({
 const rules = reactive({
   name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
   type: [{ required: true, message: '请选择类型', trigger: 'change' }],
-  level: [{ required: true, message: '请输入身份', trigger: 'blur' }],
-  email: [{ required: true, message: '请输入邮箱', trigger: 'blur' }],
+  // level: [{ required: true, message: '请输入身份', trigger: 'blur' }],
+  identity: [{ required: true, message: '请输入身份', trigger: 'blur' }],
 })
 
 // 组件挂载时拿到数据
@@ -243,6 +247,7 @@ const {
   tableData: memberData,
   doRead: api.read,
   doCreate: api.create,
+  doUpload: api.upload,
   doUpdate: api.update,
   doDelete: api.delete,
 })
