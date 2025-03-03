@@ -21,7 +21,14 @@ router.beforeEach(async (to, from, next) => {
   const token = userStore.token
   if (token) {
     //登录成功，不能访问login，指向首页
-    if (to.path === '/login') {
+    if (
+      to.path === '/login' ||
+      to.path === '/news' ||
+      to.path === '/member' ||
+      to.path === '/publication' ||
+      to.path === '/award' ||
+      to.path === '/'
+    ) {
       next({ path: '/admin' })
       nprogress.done()
     } else {
@@ -59,7 +66,7 @@ router.beforeEach(async (to, from, next) => {
   }
 })
 //全局后置守卫
-router.beforeEach((to, from) => {
+router.afterEach((to, from) => {
   //设置网页的名字
   document.title = `${settings.title}-${to.meta.title}`
   nprogress.done()

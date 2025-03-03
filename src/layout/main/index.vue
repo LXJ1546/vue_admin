@@ -3,9 +3,11 @@
   <router-view v-slot="{ Component }">
     <transition name="fade" mode="out-in">
       <!-- 渲染layout一级路由的子路由 -->
-      <div style="height: 100%" :key="route.path">
-        <component :is="Component" v-if="flag" />
-      </div>
+      <keep-alive>
+        <div style="height: 100%" :key="route.path">
+          <component :is="Component" v-if="flag" />
+        </div>
+      </keep-alive>
     </transition>
   </router-view>
 </template>

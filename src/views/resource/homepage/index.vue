@@ -296,6 +296,7 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow: auto;
     margin: 12px;
     border: 1px solid rgb(239, 239, 245, 1);
     background-color: white;

@@ -243,6 +243,10 @@ const trendOption = {
 .content {
   margin: 12px;
   border-color: rgb(239, 239, 245, 1);
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  overflow: auto;
   .home_container {
     display: flex;
     flex-direction: column;

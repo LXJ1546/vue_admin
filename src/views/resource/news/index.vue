@@ -231,6 +231,7 @@ const {
     border-radius: 8px;
     padding: 24px;
     flex: 1 1 0%;
+    overflow: auto;
   }
 }
 </style>
