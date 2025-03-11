@@ -1,5 +1,10 @@
 
 后端部分：adminBackEnd
+部分页面展示：
+![1](https://github.com/user-attachments/assets/9a8da168-7efe-4841-ac34-36876113ca6a)
+![2](https://github.com/user-attachments/assets/76bcd237-8988-4b96-98a3-7e44320625bf)
+![3](https://github.com/user-attachments/assets/1883a98d-0cd9-44e7-b74e-95c12bb45524)
+![4](https://github.com/user-attachments/assets/389347b4-041d-4ae8-b5f6-fa7ec5b55412)
 
 # Vue 3 + TypeScript + Vite
 
